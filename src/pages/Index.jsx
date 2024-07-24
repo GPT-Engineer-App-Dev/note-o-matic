@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +21,7 @@ const Index = () => {
   const [selectedNote, setSelectedNote] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
@@ -90,7 +92,7 @@ const Index = () => {
           <Card
             key={note.id}
             className="cursor-pointer"
-            onClick={() => setSelectedNote(note)}
+            onClick={() => navigate(`/note/${note.id}`)}
             style={{ backgroundColor: note.color }}
           >
             <CardHeader>
