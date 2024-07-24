@@ -10,9 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Edit, Trash } from "lucide-react";
+import { Plus, Edit, Trash, Tag } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ColorPicker } from "./ColorPicker";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [notes, setNotes] = useState([]);
@@ -96,7 +97,14 @@ const Index = () => {
               <CardTitle>{note.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="truncate">{note.content}</p>
+              <p className="truncate mb-2">{note.content}</p>
+              <div className="flex flex-wrap gap-1">
+                {note.tags && note.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -118,6 +126,13 @@ const Index = () => {
             ) : (
               <div>
                 <p className="mb-4">{selectedNote.content}</p>
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {selectedNote.tags && selectedNote.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
                 <div className="flex justify-end space-x-2">
                   <Button onClick={() => setIsEditing(true)}>
                     <Edit className="mr-2 h-4 w-4" /> Edit
@@ -142,13 +157,28 @@ const NoteForm = ({ note, onSave, onCancel }) => {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
   const [color, setColor] = useState(note?.color || "#ffffff");
+  const [tags, setTags] = useState(note?.tags || []);
+  const [currentTag, setCurrentTag] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ id: note?.id, title, content, color });
+    onSave({ id: note?.id, title, content, color, tags });
     setTitle("");
     setContent("");
     setColor("#ffffff");
+    setTags([]);
+    setCurrentTag("");
+  };
+
+  const handleAddTag = () => {
+    if (currentTag.trim() !== "" && !tags.includes(currentTag.trim())) {
+      setTags([...tags, currentTag.trim()]);
+      setCurrentTag("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   return (
@@ -166,6 +196,23 @@ const NoteForm = ({ note, onSave, onCancel }) => {
         required
       />
       <ColorPicker color={color} onChange={setColor} />
+      <div className="flex items-center space-x-2">
+        <Input
+          placeholder="Add a tag"
+          value={currentTag}
+          onChange={(e) => setCurrentTag(e.target.value)}
+        />
+        <Button type="button" onClick={handleAddTag}>
+          <Tag className="mr-2 h-4 w-4" /> Add Tag
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {tags.map((tag, index) => (
+          <Badge key={index} variant="secondary" className="cursor-pointer" onClick={() => handleRemoveTag(tag)}>
+            {tag} <span className="ml-1">&times;</span>
+          </Badge>
+        ))}
+      </div>
       <div className="flex justify-end space-x-2">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
