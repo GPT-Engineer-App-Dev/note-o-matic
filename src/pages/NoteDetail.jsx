@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Edit, ArrowLeft, Trash } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import Comments from './Comments';
 
 const NoteDetail = () => {
   const { id } = useParams();
@@ -43,6 +44,15 @@ const NoteDetail = () => {
     navigate('/');
   };
 
+  const handleCommentUpdate = (updatedComments) => {
+    const updatedNote = { ...note, comments: updatedComments };
+    setNote(updatedNote);
+    
+    const notes = JSON.parse(localStorage.getItem('notes')) || [];
+    const updatedNotes = notes.map(n => n.id === parseInt(id) ? updatedNote : n);
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+  };
+
   if (!note) return null;
 
   return (
@@ -73,6 +83,7 @@ const NoteDetail = () => {
           </div>
         </CardContent>
       </Card>
+      <Comments comments={note.comments || []} onUpdate={handleCommentUpdate} />
     </div>
   );
 };

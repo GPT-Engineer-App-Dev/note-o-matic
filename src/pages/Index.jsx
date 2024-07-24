@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Edit, Trash, Tag } from "lucide-react";
+import { Plus, Edit, Trash, Tag, MessageSquare } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ColorPicker } from "./ColorPicker";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +33,7 @@ const Index = () => {
   };
 
   const addNote = (note) => {
-    const updatedNotes = [...notes, { ...note, id: Date.now() }];
+    const updatedNotes = [...notes, { ...note, id: Date.now(), comments: [] }];
     setNotes(updatedNotes);
     saveNotesToLocalStorage(updatedNotes);
     toast({
@@ -100,12 +100,16 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <p className="truncate mb-2">{note.content}</p>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1 mb-2">
                 {note.tags && note.tags.map((tag, index) => (
                   <Badge key={index} variant="secondary">
                     {tag}
                   </Badge>
                 ))}
+              </div>
+              <div className="flex items-center text-sm text-gray-500">
+                <MessageSquare className="h-4 w-4 mr-1" />
+                {note.comments ? note.comments.length : 0} comments
               </div>
             </CardContent>
           </Card>
@@ -164,7 +168,7 @@ const NoteForm = ({ note, onSave, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ id: note?.id, title, content, color, tags });
+    onSave({ id: note?.id, title, content, color, tags, comments: note?.comments || [] });
     setTitle("");
     setContent("");
     setColor("#ffffff");
