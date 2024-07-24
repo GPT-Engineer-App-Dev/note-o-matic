@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Edit, Trash } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ColorPicker } from "./ColorPicker";
 
 const Index = () => {
   const [notes, setNotes] = useState([]);
@@ -89,6 +90,7 @@ const Index = () => {
             key={note.id}
             className="cursor-pointer"
             onClick={() => setSelectedNote(note)}
+            style={{ backgroundColor: note.color }}
           >
             <CardHeader>
               <CardTitle>{note.title}</CardTitle>
@@ -139,12 +141,14 @@ const Index = () => {
 const NoteForm = ({ note, onSave, onCancel }) => {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
+  const [color, setColor] = useState(note?.color || "#ffffff");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ id: note?.id, title, content });
+    onSave({ id: note?.id, title, content, color });
     setTitle("");
     setContent("");
+    setColor("#ffffff");
   };
 
   return (
@@ -161,6 +165,7 @@ const NoteForm = ({ note, onSave, onCancel }) => {
         onChange={(e) => setContent(e.target.value)}
         required
       />
+      <ColorPicker color={color} onChange={setColor} />
       <div className="flex justify-end space-x-2">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
